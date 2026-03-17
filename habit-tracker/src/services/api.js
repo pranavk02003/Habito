@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: "https://habito-1c5c.onrender.com"
 });
 
 API.interceptors.request.use((req) => {
