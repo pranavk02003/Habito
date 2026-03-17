@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body{
+  font-family: 'Inter', sans-serif;
+ background: linear-gradient(to bottom, #fff7ed, #ffffff);
+}
+@import "react-calendar-heatmap/dist/styles.css";
+
+/* Custom colors for Habito */
+
+.react-calendar-heatmap .color-empty {
+  fill: #f1f5f9;
+}
+
+.react-calendar-heatmap .color-scale-1 {
+  fill: #fed7aa;
+}
+
+.react-calendar-heatmap .color-scale-2 {
+  fill: #fb923c;
+}
+
+.react-calendar-heatmap .color-scale-3 {
+  fill: #f97316;
+}
+
+.react-calendar-heatmap .color-scale-4 {
+  fill: #ea580c;
+}
+
+@import "tailwindcss";
+
+ @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease;
+}
