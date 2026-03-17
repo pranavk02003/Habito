@@ -29,42 +29,49 @@ const Stats = () => {
     return date.getMonth() === selectedMonth;
   });
 
-  /* Generate weekly data */
+ /* Generate weekly data */
 
-  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-  const weeklyData = days.map(day => ({
-    day,
-    completed: 0
-  }));
+const weeklyData = days.map(day => ({
+  day,
+  completed: 0
+}));
 
-  monthlyHabits.forEach(habit => {
+monthlyHabits.forEach(habit => {
 
-    if(!habit?.completed) return;
+  if(!habit?.completed) return;
 
-    const date = new Date(habit.createdAt || Date.now());
+  const date = new Date(habit.createdAt || Date.now());
 
-    let dayIndex = date.getDay();
+  /* Calculate week of the month */
+  const weekOfMonth = Math.ceil(date.getDate() / 7);
 
-    if(dayIndex === 0) dayIndex = 6;
-    else dayIndex -= 1;
+  if(weekOfMonth !== selectedWeek) return;
 
-    weeklyData[dayIndex].completed += 1;
+  let dayIndex = date.getDay();
 
-  });
+  if(dayIndex === 0) dayIndex = 6;
+  else dayIndex -= 1;
 
-  /* Heatmap data */
+  weeklyData[dayIndex].completed += 1;
 
-  const heatmapData = [
-    { date: "2026-03-10", count: 1 },
-    { date: "2026-03-11", count: 2 },
-    { date: "2026-03-12", count: 3 },
-    { date: "2026-03-13", count: 1 },
-    { date: "2026-03-14", count: 2 },
-    { date: "2026-03-15", count: 3 },
-    { date: "2026-03-16", count: 4 },
-    { date: "2026-03-17", count: 2 }
-  ];
+});
+
+/* Generate Heatmap data from habits */
+
+const heatmapData = habits.map(habit => {
+
+  const date = new Date(habit.createdAt || Date.now());
+
+  const formattedDate = date.toISOString().split("T")[0];
+
+  return {
+    date: formattedDate,
+    count: habit.completed ? 1 : 0
+  };
+
+});
 
   return (
 
@@ -113,7 +120,7 @@ const Stats = () => {
       <div className="bg-white p-6 rounded-xl shadow mb-10">
 
         <h2 className="text-lg font-semibold mb-4">
-          Weekly Habit Completion
+          Weekly Habit Completion . Week {selectedWeek}
         </h2>
 
         <ResponsiveContainer width="100%" height={300}>
