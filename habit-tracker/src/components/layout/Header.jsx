@@ -1,5 +1,8 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
 import { Home, BarChart2, User } from "lucide-react";
 import logo from "../../assets/logo/Habito.png";
 
@@ -59,12 +62,25 @@ const Header = () => {
         </NavLink>
 
         {/* Login Button */}
-        <NavLink to="/login">
-          <button className="bg-orange-500 px-4 py-1 rounded-lg hover:bg-orange-600 transition">
-            Login
-          </button>
-        </NavLink>
-
+        {user ? (
+  <button
+    onClick={() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      dispatch(logout());
+      navigate("/login");
+    }}
+    className="bg-red-500 px-4 py-1 rounded-lg hover:bg-red-600 transition"
+  >
+    Logout
+  </button>
+) : (
+  <NavLink to="/login">
+    <button className="bg-orange-500 px-4 py-1 rounded-lg hover:bg-orange-600 transition">
+      Login
+    </button>
+  </NavLink>
+)}
       </nav>
 
     </header>
