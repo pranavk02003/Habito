@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
+import { useDispatch } from "react-redux";
+import { signup } from "../../redux/authSlice";
 
 const SignupForm = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [username,setUsername] = useState("");
   const [email,setEmail] = useState("");
@@ -26,9 +29,6 @@ const SignupForm = () => {
 
       console.log(res.data);
 
-      localStorage.setItem("token", res.data.token);
-
-      navigate("/");
 
     } catch (error) {
 
