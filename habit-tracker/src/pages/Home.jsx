@@ -47,7 +47,7 @@ useEffect(() => {
 <div className="bg-gradient-to-r from-orange-500 to-amber-400 text-white p-6 rounded-2xl shadow-lg mb-6">
 
   <h1 className="text-2xl font-bold">
-    {getGreeting()} {user?.name} 👋
+    {getGreeting()} {user?.name || "User"} 👋
   </h1>
 
   <p className="text-sm opacity-90 mt-1">

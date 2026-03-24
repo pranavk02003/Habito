@@ -6,7 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { Home, BarChart2, User } from "lucide-react";
 import logo from "../../assets/logo/Habito.png";
 
+
 const Header = () => {
+
+  const dispatch = useDispatch();
+const navigate = useNavigate();
+const user = useSelector((state) => state.auth.user);
+
   return (
     <header className="hidden md:flex bg-slate-900 text-white px-8 py-4 justify-between items-center shadow">
 
