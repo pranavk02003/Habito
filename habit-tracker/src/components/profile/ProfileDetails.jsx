@@ -7,6 +7,19 @@ const ProfileDetails = () => {
 
   const habits = useSelector((state) => state.habits?.habits || []);
   const user = useSelector((state) => state.auth.user);
+  if (!user) {
+  return (
+    <div className="flex flex-col items-center justify-center mt-20 gap-4">
+      <p className="text-gray-600">You are not logged in</p>
+
+      <NavLink to="/login">
+        <button className="bg-orange-500 text-white px-6 py-2 rounded-lg">
+          Login
+        </button>
+      </NavLink>
+    </div>
+  );
+}
 
   const [profileImage, setProfileImage] = useState(null);
 
