@@ -28,7 +28,13 @@ const SignupForm = () => {
       });
 
       console.log(res.data);
+    localStorage.setItem("token", res.data.token);
 
+      dispatch(signup({
+       name: username,
+       email: email,}));
+
+      navigate("/");
 
     } catch (error) {
 
