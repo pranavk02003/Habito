@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { User, Plus, Trash2 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const ProfileDetails = () => {
 
