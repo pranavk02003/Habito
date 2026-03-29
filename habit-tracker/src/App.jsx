@@ -27,14 +27,24 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
 
-    if (user) {
-      dispatch(login(JSON.parse(user)));
+      if (user) {
+        dispatch(
+          login({
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Invalid user in localStorage");
+      localStorage.removeItem("user");
     }
   }, [dispatch]);
 

@@ -5,40 +5,49 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 
 const LoginForm = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res = await API.post("/auth/login", {
         email,
         password,
       });
 
-      console.log(res.data);
+      console.log("LOGIN RESPONSE:", res.data);
 
       // ✅ Save token
       localStorage.setItem("token", res.data.token);
 
-      // ✅ Save user (IMPORTANT)
+      // ✅ Save full user (IMPORTANT for refresh + admin)
       localStorage.setItem("user", JSON.stringify(res.data));
 
-      // ✅ Update redux (ONLY ONCE)
-      dispatch(login(res.data));
+      // ✅ Update redux properly
+      dispatch(
+        login({
+          name: res.data.name,
+          email: res.data.email,
+          role: res.data.role,
+        })
+      );
 
       alert("Login successful");
 
       navigate("/");
-
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,8 +74,12 @@ const LoginForm = () => {
         required
       />
 
-      <button className="w-full bg-black text-white py-2 rounded">
-        Login
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+      >
+        {loading ? "Logging in..." : "Login"}
       </button>
 
       <p className="text-sm text-center mt-4">
