@@ -24,6 +24,13 @@ const LoginForm = () => {
       // Save token
       localStorage.setItem("token", res.data.token);
 
+
+dispatch(login({
+  name: res.data.user.name,
+  email: res.data.user.email,
+  role: res.data.user.role
+}));
+
       // Update redux
       dispatch(
         login({
