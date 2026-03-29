@@ -24,4 +24,5 @@ router.delete("/user/:id", protect, adminOnly, async (req, res) => {
   res.json({ message: "User deleted" });
 });
 
+
 export default router;
