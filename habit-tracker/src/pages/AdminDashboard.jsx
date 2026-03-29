@@ -6,47 +6,62 @@ import { useNavigate } from "react-router-dom";
 const AdminDashboard = () => {
 
   const [users, setUsers] = useState([]);
-  const [habits, setHabits] = useState([]);
+  const [selectedHabits, setSelectedHabits] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const user = useSelector((state) => state.auth?.user);
   const navigate = useNavigate();
 
-  // 🔐 Protect admin route
+  //  Protect admin route
   useEffect(() => {
     if (!user || user.role !== "admin") {
       navigate("/");
     }
   }, [user, navigate]);
 
-  // 🔥 Fetch users + habits
+  //  Fetch only users
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUsers = async () => {
       try {
-        const usersRes = await API.get("/admin/users");
-        const habitsRes = await API.get("/admin/habits");
-
-        setUsers(usersRes.data);
-        setHabits(habitsRes.data);
-
+        const res = await API.get("/admin/users");
+        setUsers(res.data);
       } catch (error) {
-        console.error("Admin fetch error:", error);
+        console.error("Error fetching users", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchUsers();
   }, []);
 
-  // ❌ Delete user
+  //  Delete user
   const handleDelete = async (id) => {
     try {
       await API.delete(`/admin/user/${id}`);
       setUsers(users.filter(u => u._id !== id));
+
+      // reset habits if deleted user was selected
+      if (selectedUser && selectedUser._id === id) {
+        setSelectedHabits([]);
+        setSelectedUser(null);
+      }
+
     } catch (error) {
       console.error("Delete failed", error);
       alert("Failed to delete user");
+    }
+  };
+
+  //  Fetch habits of specific user
+  const fetchUserHabits = async (userId, userName) => {
+    try {
+      const res = await API.get(`/admin/user/${userId}/habits`);
+      setSelectedHabits(res.data);
+      setSelectedUser(userName);
+    } catch (error) {
+      console.error("Error fetching habits", error);
     }
   };
 
@@ -77,6 +92,15 @@ const AdminDashboard = () => {
                 Role: {u.role || "user"}
               </p>
 
+              {/*  VIEW HABITS BUTTON */}
+              <button
+                onClick={() => fetchUserHabits(u._id, u.name)}
+                className="mt-2 mr-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+              >
+                View Habits
+              </button>
+
+              {/* DELETE */}
               <button
                 onClick={() => handleDelete(u._id)}
                 className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
@@ -86,31 +110,28 @@ const AdminDashboard = () => {
             </div>
           ))}
 
-          {/* HABITS SECTION 🔥 */}
+          {/* USER-SPECIFIC HABITS */}
           <h2 className="font-semibold mt-8 mb-3 text-lg">
-            All Habits ({habits.length})
+            {selectedUser ? `${selectedUser}'s Habits` : "User Habits"}
           </h2>
 
-          {habits.length > 0 ? (
-            habits.map((h) => (
+          {selectedHabits.length > 0 ? (
+            selectedHabits.map((h) => (
               <div
                 key={h._id}
-                className="border p-3 mb-3 rounded-lg shadow-sm bg-gray-50"
+                className="border p-3 mb-2 rounded bg-gray-50"
               >
                 <p className="font-medium">{h.name}</p>
-                <p className="text-sm">
-                  Status: {h.completed ? "✅ Done" : "❌ Not Done"}
-                </p>
-                <p className="text-xs text-gray-500">
+                <p>Status: {h.completed ? "✅ Done" : "❌ Not Done"}</p>
+                <p className="text-sm text-gray-500">
                   Streak: {h.streak}
-                </p>
-                <p className="text-xs text-gray-400">
-                  User ID: {h.user}
                 </p>
               </div>
             ))
           ) : (
-            <p className="text-gray-500">No habits found</p>
+            <p className="text-gray-400">
+              Click "View Habits" to see user activity
+            </p>
           )}
         </>
       )}
