@@ -7,6 +7,7 @@ import Stats from "./pages/Stats";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,9 @@ const router = createBrowserRouter([
       { path: "profile", element: <Profile /> },
       { path: "login", element: <Login /> },
       { path: "signup", element: <Signup /> },
+
+      
+      { path: "admin", element: <AdminDashboard /> },
     ],
   },
 ]);

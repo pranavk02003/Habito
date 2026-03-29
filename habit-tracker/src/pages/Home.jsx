@@ -10,7 +10,7 @@ const Home = () => {
 
   const habits = useSelector((state) => state.habits?.habits || []);
 
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth?.user);
 
   const dispatch = useDispatch();
 

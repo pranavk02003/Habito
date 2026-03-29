@@ -6,29 +6,25 @@ import { useNavigate } from "react-router-dom";
 import { Home, BarChart2, User } from "lucide-react";
 import logo from "../../assets/logo/Habito.png";
 
-
 const Header = () => {
 
   const dispatch = useDispatch();
-const navigate = useNavigate();
-const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth?.user);
 
   return (
     <header className="hidden md:flex bg-slate-900 text-white px-8 py-4 justify-between items-center shadow">
 
       {/* Logo */}
       <div className="flex items-center gap-3">
-
         <img
           src={logo}
           alt="Habito"
           className="w-12 h-12 rounded-lg"
         />
-
         <span className="text-3xl font-extrabold tracking-wide text-orange-400">
           Habito
         </span>
-
       </div>
 
       {/* Navigation */}
@@ -67,26 +63,41 @@ const user = useSelector((state) => state.auth.user);
           <User size={18} /> Profile
         </NavLink>
 
-        {/* Login Button */}
+        {/* 🔥 ADMIN LINK (ADD THIS) */}
+        {user?.role === "admin" && (
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              `hover:text-orange-400 ${
+                isActive ? "text-orange-400" : ""
+              }`
+            }
+          >
+            Admin
+          </NavLink>
+        )}
+
+        {/* Login / Logout */}
         {user ? (
-  <button
-    onClick={() => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      dispatch(logout());
-      navigate("/login");
-    }}
-    className="bg-red-500 px-4 py-1 rounded-lg hover:bg-red-600 transition"
-  >
-    Logout
-  </button>
-) : (
-  <NavLink to="/login">
-    <button className="bg-orange-500 px-4 py-1 rounded-lg hover:bg-orange-600 transition">
-      Login
-    </button>
-  </NavLink>
-)}
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              dispatch(logout());
+              navigate("/login");
+            }}
+            className="bg-red-500 px-4 py-1 rounded-lg hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        ) : (
+          <NavLink to="/login">
+            <button className="bg-orange-500 px-4 py-1 rounded-lg hover:bg-orange-600 transition">
+              Login
+            </button>
+          </NavLink>
+        )}
+
       </nav>
 
     </header>

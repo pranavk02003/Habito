@@ -6,7 +6,7 @@ import { NavLink } from "react-router-dom";
 const ProfileDetails = () => {
 
   const habits = useSelector((state) => state.habits?.habits || []);
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth?.user);
   if (!user) {
   return (
     <div className="flex flex-col items-center justify-center mt-20 gap-4">
