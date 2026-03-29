@@ -63,19 +63,14 @@ const Header = () => {
           <User size={18} /> Profile
         </NavLink>
 
-        {/* 🔥 ADMIN LINK (ADD THIS) */}
+        
         {user?.role === "admin" && (
-          <NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              `hover:text-orange-400 ${
-                isActive ? "text-orange-400" : ""
-              }`
-            }
-          >
-            Admin
-          </NavLink>
-        )}
+  <NavLink to="/admin">
+    <button className="bg-blue-500 px-4 py-1 rounded-lg hover:bg-blue-600 transition">
+      Admin
+    </button>
+  </NavLink>
+)}
 
         {/* Login / Logout */}
         {user ? (

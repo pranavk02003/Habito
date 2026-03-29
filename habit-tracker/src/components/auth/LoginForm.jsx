@@ -18,34 +18,27 @@ const LoginForm = () => {
     try {
       const res = await API.post("/auth/login", {
         email,
-        password
+        password,
       });
 
-      // Save token
+      console.log(res.data);
+
+      // ✅ Save token
       localStorage.setItem("token", res.data.token);
 
+      // ✅ Save user (IMPORTANT)
+      localStorage.setItem("user", JSON.stringify(res.data));
 
-dispatch(login({
-  name: res.data.user.name,
-  email: res.data.user.email,
-  role: res.data.user.role
-}));
-
-      // Update redux
-      dispatch(
-        login({
-          email: res.data.email,
-          name: res.data.name
-        })
-      );
+      // ✅ Update redux (ONLY ONCE)
+      dispatch(login(res.data));
 
       alert("Login successful");
 
-      navigate("/"); // go to home
+      navigate("/");
 
     } catch (error) {
       console.error(error);
-      alert("Login failed");
+      alert(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -84,10 +77,6 @@ dispatch(login({
         >
           Sign up
         </Link>
-      </p>
-
-      <p className="text-sm text-center text-gray-500 cursor-pointer">
-        Forgot password?
       </p>
 
     </form>
