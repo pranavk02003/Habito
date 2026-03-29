@@ -6,22 +6,48 @@ import adminOnly from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
+
 //  Get all users
 router.get("/users", protect, adminOnly, async (req, res) => {
-  const users = await User.find().select("-password");
-  res.json(users);
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-//  Get all habits
+
+// Get ALL habits 
 router.get("/habits", protect, adminOnly, async (req, res) => {
-  const habits = await Habit.find();
-  res.json(habits);
+  try {
+    const habits = await Habit.find();
+    res.json(habits);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-// Delete user
+
+//  Get habits of specific user 
+router.get("/user/:id/habits", protect, adminOnly, async (req, res) => {
+  try {
+    const habits = await Habit.find({ user: req.params.id });
+    res.json(habits);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+//  Delete user
 router.delete("/user/:id", protect, adminOnly, async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: "User deleted" });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 
