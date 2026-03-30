@@ -5,6 +5,7 @@ import AddHabitButton from "../components/habit/AddHabitButton";
 import Dashboard from "../components/habit/Dashboard";
 import { setHabits } from "../redux/habitsSlice";
 import { getHabits } from "../services/habitService";
+import AISuggestions from "../components/ai/AISuggestions";
 
 const Home = () => {
 
@@ -58,6 +59,7 @@ useEffect(() => {
 
       {/* Dashboard */}
       <Dashboard />
+      
 
       {/* Habit List */}
       <div className="grid gap-4 mt-6">
