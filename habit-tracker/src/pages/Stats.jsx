@@ -22,13 +22,13 @@ const Stats = () => {
 
   const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-  /* 🔥 FILTER BY MONTH (SMART) */
+  
   const monthlyHabits = habits.filter(h => {
     const date = new Date(h.updatedAt || h.createdAt);
     return date.getMonth() === selectedMonth;
   });
 
-  /* 🔥 WEEKLY DATA (SMART + FILTERED) */
+  
   const weeklyData = days.map(day => ({
     day,
     completed: 0
@@ -52,7 +52,7 @@ const Stats = () => {
 
   });
 
-  /* 🔥 HEATMAP FIX */
+  
   const heatmapData = habits.map(habit => {
     const date = new Date(habit.updatedAt || habit.createdAt);
 
@@ -69,7 +69,7 @@ const Stats = () => {
         Habit Statistics
       </h1>
 
-      {/* 🔥 MONTH + WEEK */}
+      
       <div className="flex gap-4 justify-center mb-6">
 
         <select
@@ -96,11 +96,12 @@ const Stats = () => {
           <option value={2}>Week 2</option>
           <option value={3}>Week 3</option>
           <option value={4}>Week 4</option>
+          <option value={5}>Week 5</option>
         </select>
 
       </div>
 
-      {/* 🔥 GRAPH */}
+      {/*  GRAPH */}
       <div className="bg-white p-6 rounded-xl shadow mb-10">
 
         <h2 className="text-lg font-semibold mb-4">
@@ -118,7 +119,7 @@ const Stats = () => {
 
       </div>
 
-      {/* 🔥 HEATMAP FIXED SIZE */}
+      {/*  HEATMAP FIXED SIZE */}
       <div className="bg-white p-6 rounded-xl shadow">
 
         <h2 className="text-lg font-semibold mb-4">
