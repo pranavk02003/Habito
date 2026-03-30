@@ -1,28 +1,32 @@
 import React, { useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { User, Plus, Trash2 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../../redux/authSlice";
 
 const ProfileDetails = () => {
 
   const habits = useSelector((state) => state.habits?.habits || []);
   const user = useSelector((state) => state.auth?.user);
-  if (!user) {
-  return (
-    <div className="flex flex-col items-center justify-center mt-20 gap-4">
-      <p className="text-gray-600">You are not logged in</p>
 
-      <NavLink to="/login">
-        <button className="bg-orange-500 text-white px-6 py-2 rounded-lg">
-          Login
-        </button>
-      </NavLink>
-    </div>
-  );
-}
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 gap-4">
+        <p className="text-gray-600">You are not logged in</p>
+
+        <NavLink to="/login">
+          <button className="bg-orange-500 text-white px-6 py-2 rounded-lg">
+            Login
+          </button>
+        </NavLink>
+      </div>
+    );
+  }
 
   const [profileImage, setProfileImage] = useState(null);
-
   const fileInputRef = useRef(null);
 
   const completed = habits.filter(h => h.completed).length;
@@ -36,18 +40,22 @@ const ProfileDetails = () => {
       : Math.max(...habits.map(h => h.streak || 0));
 
   const handleUpload = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     const imageUrl = URL.createObjectURL(file);
-
     setProfileImage(imageUrl);
   };
 
   const handleDelete = () => {
     setProfileImage(null);
+  };
+
+  // LOGOUT FUNCTION
+  const handleLogout = () => {
+    localStorage.clear();
+    dispatch(logout());
+    navigate("/login");
   };
 
   return (
@@ -78,11 +86,11 @@ const ProfileDetails = () => {
 
           {/* Upload Icon */}
           <div
-  onClick={() => fileInputRef.current.click()}
-  className="absolute bottom-0 right-0 bg-orange-500 text-white p-1 rounded-full cursor-pointer"
->
-  <Plus size={16} />
-</div>
+            onClick={() => fileInputRef.current.click()}
+            className="absolute bottom-0 right-0 bg-orange-500 text-white p-1 rounded-full cursor-pointer"
+          >
+            <Plus size={16} />
+          </div>
 
           {/* Delete Button */}
           {profileImage && (
@@ -142,6 +150,14 @@ const ProfileDetails = () => {
         </div>
 
       </div>
+
+     
+      <button
+        onClick={handleLogout}
+        className="mt-6 bg-red-500 text-white px-4 py-3 rounded-xl w-full font-semibold hover:bg-red-600 transition"
+      >
+        Logout
+      </button>
 
     </div>
   );

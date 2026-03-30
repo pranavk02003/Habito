@@ -1,40 +1,77 @@
 import React, { useState } from "react";
+import API from "../../services/api";
+import toast from "react-hot-toast";
 
-const AISuggestions = () => {
+const AISuggestions = ({ refreshHabits }) => {
   const [goal, setGoal] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [motivation, setMotivation] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  //  AI Logic (rule-based)
-  const generateSuggestions = () => {
-    let result = [];
+  const getSuggestions = (goal) => {
+    const g = goal.toLowerCase();
 
-    const text = goal.toLowerCase();
-
-    if (text.includes("weight") || text.includes("fitness")) {
-      result = ["🏃 Workout 30 mins", "💧 Drink 3L water", "🚶 Walk 10k steps"];
-    } else if (text.includes("study") || text.includes("exam")) {
-      result = ["📚 Study 2 hours", "📝 Revise notes", "💻 Practice coding"];
-    } else if (text.includes("productivity")) {
-      result = ["⏰ Wake up early", "📅 Plan your day", "📵 Reduce distractions"];
-    } else {
-      result = ["✅ Stay consistent", "📊 Track habits daily", "🔥 Never skip twice"];
+    if (g.includes("weight")) {
+      return ["Walk daily", "Drink water", "Workout"];
     }
 
-    setSuggestions(result);
+    if (g.includes("study")) {
+      return ["Study 2 hours", "Avoid phone", "Revise"];
+    }
+
+    return ["Stay consistent", "Focus daily"];
   };
 
-  //  Motivation Generator
-  const generateMotivation = () => {
-    const messages = [
-      "🔥 Small habits build big success",
-      "💪 Consistency beats motivation",
-      "🚀 You are improving every day",
-      "🎯 Focus on progress, not perfection",
-    ];
+  const generateSuggestions = () => {
+    if (!goal.trim()) {
+      toast.error("Enter a goal");
+      return;
+    }
 
-    const random = messages[Math.floor(Math.random() * messages.length)];
-    setMotivation(random);
+    setSuggestions(getSuggestions(goal));
+    setMotivation("");
+  };
+
+  const generateMotivation = () => {
+    const msgs = ["🔥 Keep going!", "💪 You got this!", "🚀 Stay strong"];
+    setMotivation(msgs[Math.floor(Math.random() * msgs.length)]);
+    setSuggestions([]);
+  };
+
+  //  Add single habit
+  const addHabitToDB = async (name) => {
+    try {
+      await API.post("/habits", { name });
+
+      toast.success("Habit added ✅");
+
+      if (refreshHabits) refreshHabits();
+
+    } catch (err) {
+      toast.error("Failed ❌");
+    }
+  };
+
+  // Add all habits
+  const addAllHabits = async () => {
+    try {
+      setLoading(true);
+
+      for (let s of suggestions) {
+        await API.post("/habits", { name: s });
+      }
+
+      toast.success("All habits added 🔥");
+
+      setSuggestions([]);
+
+      if (refreshHabits) refreshHabits();
+
+    } catch (err) {
+      toast.error("Error adding habits");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,51 +81,65 @@ const AISuggestions = () => {
         🤖 AI Habit Assistant
       </h2>
 
-      {/* Input */}
       <input
         type="text"
-        placeholder="Enter your goal (e.g., lose weight, study)"
+        placeholder="Enter goal"
         className="w-full border p-2 rounded mb-3"
         value={goal}
         onChange={(e) => setGoal(e.target.value)}
       />
 
-      {/* Buttons */}
       <div className="flex gap-2 mb-4">
         <button
           onClick={generateSuggestions}
-          className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+          className="bg-orange-500 text-white px-4 py-2 rounded"
         >
           Get Suggestions
         </button>
 
         <button
           onClick={generateMotivation}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Motivate Me
         </button>
       </div>
 
-      {/* Suggestions */}
       {suggestions.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h3 className="font-semibold mb-2">Suggested Habits:</h3>
+
           {suggestions.map((s, i) => (
-            <div key={i} className="bg-gray-100 p-2 rounded mb-1">
-              {s}
+            <div
+              key={i}
+              className="bg-gray-100 p-2 rounded mb-2 flex justify-between"
+            >
+              <span>{s}</span>
+
+              <button
+                onClick={() => addHabitToDB(s)}
+                className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+              >
+                Add
+              </button>
             </div>
           ))}
+
+          <button
+            onClick={addAllHabits}
+            disabled={loading}
+            className="bg-green-600 text-white px-4 py-2 rounded mt-2"
+          >
+            {loading ? "Adding..." : "Add All "}
+          </button>
         </div>
       )}
 
-      {/* Motivation */}
       {motivation && (
-        <div className="bg-orange-100 text-orange-700 p-3 rounded text-center font-medium">
+        <div className="bg-orange-100 text-orange-700 p-3 rounded text-center mt-3">
           {motivation}
         </div>
       )}
-
     </div>
   );
 };
