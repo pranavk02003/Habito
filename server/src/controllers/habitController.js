@@ -1,6 +1,5 @@
 import Habit from "../models/Habit.js";
 
-
 // CREATE HABIT
 export const createHabit = async (req, res) => {
   try {
@@ -9,6 +8,8 @@ export const createHabit = async (req, res) => {
     const habit = await Habit.create({
       user: req.user._id,
       name,
+      completed: false,
+      streak: 0,
     });
 
     res.status(201).json(habit);
@@ -30,7 +31,7 @@ export const getHabits = async (req, res) => {
 };
 
 
-// TOGGLE HABIT
+//  TOGGLE HABIT 
 export const toggleHabit = async (req, res) => {
   try {
     const habit = await Habit.findById(req.params.id);
@@ -39,15 +40,27 @@ export const toggleHabit = async (req, res) => {
       return res.status(404).json({ message: "Habit not found" });
     }
 
+    // Toggle completion
+    const wasCompleted = habit.completed;
     habit.completed = !habit.completed;
 
-    if (habit.completed) {
+    
+    if (!wasCompleted && habit.completed) {
       habit.streak += 1;
+
+      
+      habit.updatedAt = new Date();
+    }
+
+    
+    if (wasCompleted && !habit.completed) {
+    
     }
 
     await habit.save();
 
     res.json(habit);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

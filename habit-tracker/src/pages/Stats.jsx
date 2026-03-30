@@ -17,72 +17,59 @@ const Stats = () => {
 
   const habits = useSelector((state) => state.habits?.habits || []);
 
-  /* Month + Week selection */
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedWeek, setSelectedWeek] = useState(1);
 
-  const [selectedMonth,setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedWeek,setSelectedWeek] = useState(1);
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-  /* Filter habits by month */
-
+  /* 🔥 FILTER BY MONTH (SMART) */
   const monthlyHabits = habits.filter(h => {
-    const date = new Date(h.createdAt || Date.now());
+    const date = new Date(h.updatedAt || h.createdAt);
     return date.getMonth() === selectedMonth;
   });
 
- /* Generate weekly data */
+  /* 🔥 WEEKLY DATA (SMART + FILTERED) */
+  const weeklyData = days.map(day => ({
+    day,
+    completed: 0
+  }));
 
-const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  monthlyHabits.forEach(habit => {
 
-const weeklyData = days.map(day => ({
-  day,
-  completed: 0
-}));
+    if (!habit.completed) return;
 
-monthlyHabits.forEach(habit => {
+    const date = new Date(habit.updatedAt || habit.createdAt);
 
-  if(!habit?.completed) return;
+    const weekOfMonth = Math.ceil(date.getDate() / 7);
 
-  const date = new Date(habit.createdAt || Date.now());
+    if (weekOfMonth !== selectedWeek) return;
 
-  /* Calculate week of the month */
-  const weekOfMonth = Math.ceil(date.getDate() / 7);
+    let dayIndex = date.getDay();
+    if (dayIndex === 0) dayIndex = 6;
+    else dayIndex -= 1;
 
-  if(weekOfMonth !== selectedWeek) return;
+    weeklyData[dayIndex].completed += 1;
 
-  let dayIndex = date.getDay();
+  });
 
-  if(dayIndex === 0) dayIndex = 6;
-  else dayIndex -= 1;
+  /* 🔥 HEATMAP FIX */
+  const heatmapData = habits.map(habit => {
+    const date = new Date(habit.updatedAt || habit.createdAt);
 
-  weeklyData[dayIndex].completed += 1;
-
-});
-
-/* Generate Heatmap data from habits */
-
-const heatmapData = habits.map(habit => {
-
-  const date = new Date(habit.createdAt || Date.now());
-
-  const formattedDate = date.toISOString().split("T")[0];
-
-  return {
-    date: formattedDate,
-    count: habit.completed ? 1 : 0
-  };
-
-});
+    return {
+      date: date.toISOString().split("T")[0],
+      count: habit.completed ? 1 : 0
+    };
+  });
 
   return (
-
-    <div className="max-w-3xl mx-auto px-4 pb-32 animate-fadeIn">
+    <div className="max-w-3xl mx-auto px-4 pb-32">
 
       <h1 className="text-2xl font-bold text-center mb-6">
         Habit Statistics
       </h1>
 
-      {/* Month + Week Selectors */}
-
+      {/* 🔥 MONTH + WEEK */}
       <div className="flex gap-4 justify-center mb-6">
 
         <select
@@ -90,7 +77,6 @@ const heatmapData = habits.map(habit => {
           onChange={(e)=>setSelectedMonth(Number(e.target.value))}
           className="border px-3 py-1 rounded"
         >
-
           {[
             "January","February","March","April","May","June",
             "July","August","September","October","November","December"
@@ -99,7 +85,6 @@ const heatmapData = habits.map(habit => {
               {month}
             </option>
           ))}
-
         </select>
 
         <select
@@ -115,57 +100,48 @@ const heatmapData = habits.map(habit => {
 
       </div>
 
-      {/* Weekly Graph */}
-
+      {/* 🔥 GRAPH */}
       <div className="bg-white p-6 rounded-xl shadow mb-10">
 
         <h2 className="text-lg font-semibold mb-4">
-          Weekly Habit Completion . Week {selectedWeek}
+          Weekly Habit Completion
         </h2>
 
         <ResponsiveContainer width="100%" height={300}>
-
           <BarChart data={weeklyData}>
-
             <XAxis dataKey="day" />
-
             <YAxis />
-
             <Tooltip />
-
-            <Bar
-              dataKey="completed"
-              fill="#f97316"
-              radius={[6,6,0,0]}
-            />
-
+            <Bar dataKey="completed" fill="#f97316" />
           </BarChart>
-
         </ResponsiveContainer>
 
       </div>
 
-      {/* Heatmap (UNCHANGED GitHub style) */}
-
+      {/* 🔥 HEATMAP FIXED SIZE */}
       <div className="bg-white p-6 rounded-xl shadow">
 
         <h2 className="text-lg font-semibold mb-4">
           Habit Activity Calendar
         </h2>
 
-        <CalendarHeatmap
-          startDate={new Date("2026-01-01")}
-          endDate={new Date("2026-12-31")}
-          values={heatmapData}
-          classForValue={(value) => {
-            if (!value) return "color-empty";
-            if (value.count >= 4) return "color-scale-4";
-            if (value.count >= 3) return "color-scale-3";
-            if (value.count >= 2) return "color-scale-2";
-            if (value.count >= 1) return "color-scale-1";
-            return "color-empty";
-          }}
-        />
+        <div className="overflow-x-auto">
+
+          <CalendarHeatmap
+            startDate={new Date("2026-01-01")}
+            endDate={new Date()}
+            values={heatmapData}
+            classForValue={(value) => {
+              if (!value) return "color-empty";
+              if (value.count >= 4) return "color-scale-4";
+              if (value.count >= 3) return "color-scale-3";
+              if (value.count >= 2) return "color-scale-2";
+              if (value.count >= 1) return "color-scale-1";
+              return "color-empty";
+            }}
+          />
+
+        </div>
 
       </div>
 
