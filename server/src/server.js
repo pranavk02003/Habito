@@ -33,7 +33,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Habito backend running 🚀");
+  res.send("Habito backend running ");
 });
 
 
