@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { User, Plus, Trash2 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/authSlice";
+import API from "../../services/api";
 
 const ProfileDetails = () => {
 
@@ -39,13 +40,22 @@ const ProfileDetails = () => {
       ? 0
       : Math.max(...habits.map(h => h.streak || 0));
 
-  const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
-    setProfileImage(imageUrl);
-  };
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res = await API.post("/upload", formData);
+
+    setProfileImage(res.data.imageUrl);
+
+  } catch (error) {
+    console.error("Upload failed", error);
+  }
+};
 
   const handleDelete = () => {
     setProfileImage(null);
