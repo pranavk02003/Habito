@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { login } from "./redux/authSlice";
 
 import Root from "./routes/Root";
 import Home from "./pages/Home";
@@ -27,27 +25,6 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-
-      if (user) {
-        dispatch(
-          login({
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Invalid user in localStorage");
-      localStorage.removeItem("user");
-    }
-  }, [dispatch]);
-
   return <RouterProvider router={router} />;
 }
 

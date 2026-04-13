@@ -7,6 +7,7 @@ import habitRoutes from "./routes/habitRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import errorHandler from "./middleware/errorMiddleware.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/habits", habitRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Habito backend running ");

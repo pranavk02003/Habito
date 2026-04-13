@@ -25,18 +25,19 @@ const LoginForm = () => {
 
       console.log("LOGIN RESPONSE:", res.data);
 
-      // ✅ Save token
+    
       localStorage.setItem("token", res.data.token);
 
-      // ✅ Save full user (IMPORTANT for refresh + admin)
+      
       localStorage.setItem("user", JSON.stringify(res.data));
 
-      // ✅ Update redux properly
+     
       dispatch(
         login({
           name: res.data.name,
           email: res.data.email,
           role: res.data.role,
+          profilePic: res.data.profilePic,
         })
       );
 

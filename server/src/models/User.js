@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     role: {
-  type: String,
-  default: "user"
-  },
+      type: String,
+      default: "user",
+    },
+
     name: {
       type: String,
       required: true,
@@ -20,6 +21,12 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+
+   
+    profilePic: {
+      type: String,
+      default: "",
     },
   },
   {
