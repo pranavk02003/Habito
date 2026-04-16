@@ -1,53 +1,42 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
-import { useDispatch } from "react-redux";
-import { signup } from "../../redux/authSlice";
 
 const SignupForm = () => {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const [username,setUsername] = useState("");
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
-      const res = await API.post("/auth/signup",{
-       name: username,
-       email,
-       password
-       
-        
+      const res = await API.post("/auth/signup", {
+        name: username,
+        email,
+        password
       });
 
       console.log(res.data);
-    localStorage.setItem("token", res.data.token);
 
-      dispatch(signup({
-       name: username,
-       email: email,}));
+      //  ONLY SHOW MESSAGE
+      console.log("FULL RESPONSE:", res);
+console.log("DATA:", res.data);
+     alert(res.data?.message || "Signup successful");
 
-      navigate("/");
+      //  REDIRECT TO LOGIN
+      navigate("/login");
 
     } catch (error) {
-
       console.log(error);
-
       alert(error.response?.data?.message || "Signup failed");
-
     }
-
   };
 
   return (
-
     <form onSubmit={handleSubmit} className="space-y-4">
 
       <input
@@ -55,7 +44,7 @@ const SignupForm = () => {
         placeholder="Username"
         className="w-full border p-2 rounded"
         value={username}
-        onChange={(e)=>setUsername(e.target.value)}
+        onChange={(e) => setUsername(e.target.value)}
         required
       />
 
@@ -64,7 +53,7 @@ const SignupForm = () => {
         placeholder="Email"
         className="w-full border p-2 rounded"
         value={email}
-        onChange={(e)=>setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
         required
       />
 
@@ -73,7 +62,7 @@ const SignupForm = () => {
         placeholder="Password"
         className="w-full border p-2 rounded"
         value={password}
-        onChange={(e)=>setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)}
         required
       />
 
@@ -85,9 +74,7 @@ const SignupForm = () => {
       </button>
 
     </form>
-
   );
-
 };
 
 export default SignupForm;

@@ -20,21 +20,45 @@ const AdminDashboard = () => {
     }
   }, [user, navigate]);
 
-  //  Fetch only users
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await API.get("/admin/users");
-        setUsers(res.data);
-      } catch (error) {
-        console.error("Error fetching users", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //  Fetch users
+  const fetchUsers = async () => {
+    try {
+      const res = await API.get("/admin/users");
+      setUsers(res.data);
+    } catch (error) {
+      console.error("Error fetching users", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
+
+  //  Approve user
+  const handleApprove = async (id) => {
+    try {
+      await API.put(`/admin/user/${id}/approve`);
+      alert("User approved");
+      fetchUsers(); // refresh
+    } catch (error) {
+      console.error(error);
+      alert("Failed to approve user");
+    }
+  };
+
+  //  Reject user
+  const handleReject = async (id) => {
+    try {
+      await API.put(`/admin/user/${id}/reject`);
+      alert("User rejected");
+      fetchUsers(); // refresh
+    } catch (error) {
+      console.error(error);
+      alert("Failed to reject user");
+    }
+  };
 
   //  Delete user
   const handleDelete = async (id) => {
@@ -42,7 +66,6 @@ const AdminDashboard = () => {
       await API.delete(`/admin/user/${id}`);
       setUsers(users.filter(u => u._id !== id));
 
-      // reset habits if deleted user was selected
       if (selectedUser && selectedUser._id === id) {
         setSelectedHabits([]);
         setSelectedUser(null);
@@ -54,7 +77,7 @@ const AdminDashboard = () => {
     }
   };
 
-  //  Fetch habits of specific user
+  //  Fetch habits
   const fetchUserHabits = async (userId, userName) => {
     try {
       const res = await API.get(`/admin/user/${userId}/habits`);
@@ -76,7 +99,6 @@ const AdminDashboard = () => {
         <p className="text-gray-500">Loading...</p>
       ) : (
         <>
-          {/* USERS */}
           <h2 className="font-semibold mb-3 text-lg">
             All Users ({users.length})
           </h2>
@@ -88,39 +110,71 @@ const AdminDashboard = () => {
             >
               <p className="font-medium">{u.name}</p>
               <p className="text-gray-500 text-sm">{u.email}</p>
+
+              {/*  STATUS */}
+              <p className="text-sm mt-1">
+                Status:{" "}
+                <span className={
+                  u.status === "approved"
+                    ? "text-green-600"
+                    : u.status === "rejected"
+                    ? "text-red-500"
+                    : "text-yellow-500"
+                }>
+                  {u.status || "pending"}
+                </span>
+              </p>
+
               <p className="text-xs text-orange-500">
                 Role: {u.role || "user"}
               </p>
 
-              {/*  VIEW HABITS BUTTON */}
+              {/*  VIEW HABITS */}
               <button
                 onClick={() => fetchUserHabits(u._id, u.name)}
-                className="mt-2 mr-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                className="mt-2 mr-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
               >
                 View Habits
               </button>
 
+              {/*  APPROVE */}
+              {u.status !== "approved" && (
+                <button
+                  onClick={() => handleApprove(u._id)}
+                  className="mt-2 mr-2 bg-green-500 text-white px-3 py-1 rounded text-sm"
+                >
+                  Approve
+                </button>
+              )}
+
+              {/*  REJECT */}
+              {u.status !== "rejected" && (
+                <button
+                  onClick={() => handleReject(u._id)}
+                  className="mt-2 mr-2 bg-yellow-500 text-white px-3 py-1 rounded text-sm"
+                >
+                  Reject
+                </button>
+              )}
+
               {/* DELETE */}
               <button
                 onClick={() => handleDelete(u._id)}
-                className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm"
               >
                 Delete
               </button>
             </div>
           ))}
 
-          {/* USER-SPECIFIC HABITS */}
+          {/*  HABITS */}
           <h2 className="font-semibold mt-8 mb-3 text-lg">
             {selectedUser ? `${selectedUser}'s Habits` : "User Habits"}
           </h2>
 
           {selectedHabits.length > 0 ? (
             selectedHabits.map((h) => (
-              <div
-                key={h._id}
-                className="border p-3 mb-2 rounded bg-gray-50"
-              >
+              <div key={h._id} className="border p-3 mb-2 rounded bg-gray-50">
                 <p className="font-medium">{h.name}</p>
                 <p>Status: {h.completed ? "✅ Done" : "❌ Not Done"}</p>
                 <p className="text-sm text-gray-500">

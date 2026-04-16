@@ -11,6 +11,38 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+// Approve user
+export const approveUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    user.status = "approved";
+
+    await user.save();
+
+    res.json({ message: "User approved successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reject user
+export const rejectUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    user.status = "rejected";
+
+    await user.save();
+
+    res.json({ message: "User rejected" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Delete user
 export const deleteUser = async (req, res) => {
   try {
